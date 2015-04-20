@@ -59,6 +59,9 @@ class Frontier(ResourceType):
             params['mincount'] = mincount
         return self.apiget((frontier, 's', slot, 'q'), params=params)
 
+    def count_slot(self, frontier, slot):
+        return self.apiget((frontier, 's', slot, 'q/count'))
+
     def delete(self, frontier, slot, ids):
         self.apipost((frontier, 's', slot, 'q/deleted'), jl=ids)
 

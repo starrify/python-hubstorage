@@ -24,7 +24,7 @@ class FrontierTest(HSTestCase):
     def _get_urls(self, batch):
         return [r[0] for r in batch['requests']]
 
-    def test_add_read(self):
+    def test_add_read_count(self):
         frontier = self.project.frontier
 
         fps = [{'fp': '/'}]
@@ -37,6 +37,9 @@ class FrontierTest(HSTestCase):
                 in frontier.read(self.frontier, self.slot)]
         expected_urls = [[u'/', u'/index.html', u'/index2.html']]
         self.assertEqual(urls, expected_urls)
+
+        count = [x['count'] for x in frontier.count_slot(self.frontier, self.slot)]
+        self.assertEqual(count, [len(expected_urls[0])])
 
     def test_add_multiple_chunks(self):
         frontier = self.project.frontier
