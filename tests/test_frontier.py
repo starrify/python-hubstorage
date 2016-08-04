@@ -41,6 +41,7 @@ class FrontierTest(HSTestCase):
     def test_add_multiple_chunks(self):
         frontier = self.project.frontier
         old_count = frontier.newcount
+        initial_count = frontier.count_slot(self.frontier, self.slot)
 
         batch_size = 50
         fps1 = [{'fp': '/index_%s.html' % fp} for fp in range(0, batch_size)]
@@ -54,6 +55,10 @@ class FrontierTest(HSTestCase):
         frontier.flush()
 
         self.assertEqual(frontier.newcount, 150 + old_count)
+
+        # test count_slot
+        count = frontier.count_slot(self.frontier, self.slot)
+        self.assertEqual(count['count'] - initial_count['count'], 150)
 
         # insert repeated fingerprints
         fps4 = [{'fp': '/index_%s.html' % fp} for fp in range(0, batch_size)]
@@ -72,6 +77,10 @@ class FrontierTest(HSTestCase):
         # delete first 100
         ids = [batch['id'] for batch in batches]
         frontier.delete(self.frontier, self.slot, ids)
+
+        # test count_slot again
+        count = frontier.count_slot(self.frontier, self.slot)
+        self.assertEqual(count['count'] - initial_count['count'], 150 - 100)
 
         # get remaining 50
         batches = list(frontier.read(self.frontier, self.slot))
